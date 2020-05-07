@@ -1,0 +1,31 @@
+    {% extends "header.html" %}
+    {% block content %}
+    
+    <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col" style="font-size: 25px;width: 200px;text-align: center;">#</th>
+            <th scope="col" style="font-size: 25px;width: 400px;">MAC</th>
+            <th scope="col" style="font-size: 25px;">Тип<button class="btn btn-success" style="width: 23; height: 23;font-size: 20px; padding: 0px;margin-top: 0px; text-align: center;"><i  class="fas fa-plus"></i></button></th>
+           <!--- <th scope="col" style="font-size: 25px;">Описание</th>-->
+            <th scope="col" style="width:180px;"> <button type="button" onclick="window.location.href='{% url 'add_node' %}'";  class="btn btn-primary">Добавить узел</button></th>
+          </tr>
+        </thead>
+        <tbody>
+    {% for node in nodes %} 
+    <tr onclick="window.location.href='/node/{{ node.pk }}'; ">
+        <th style="text-align: center;" scope="row">{{ node.pk }}  </th>
+        <td>{{ node.node_MAC }}</td>
+        <td>{{ node.node_id_type }}</td>
+        <!--- <td>{{node.node_description }}</td>-->
+        <td scope="row"> <button type="button" class="btn btn-info">Изменить </button></td>
+      </tr>
+       
+    {% endfor %}
+    
+   
+</tbody>
+</table>
+
+  
+  {% endblock %}  
