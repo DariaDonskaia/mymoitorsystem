@@ -1,17 +1,27 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Node, Gateway
+from .models import Node, Gateway, Node_Data
 from .forms import NodeForm, GatewayForm
+import json
 
 def index(request):
-    
+    if request.is_ajax():
+        id = request.POST.get('id')
+        x = request.POST.get('node_x')
+        y = request.POST.get('node_y')
+        node = Node.objects.get(pk=id)
+        node.node_x = x
+        node.node_y = y
+        node.save()
+        return HttpResponse(json.dumps({'result' : result}),content_type="application/json")
     device = Node.objects.all()[:5]
     gateways = Gateway.objects.all()[:5]
     return render(request,'base.html',{'devices': device,'gateways':gateways })
 
 def node(request,id_node):
     device = Node.objects.get(pk = id_node)
-    return render(request,'node.html',{'node': device})
+    data = Node_Data.objects.get(node_data_node = id_node)
+    return render(request,'node.html',{'node': device, 'data':data})
 
 def nodes(request):
     device = Node.objects.all()

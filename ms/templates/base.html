@@ -2,15 +2,17 @@
     {% load static %}
 
     {% block content %}
-    <h1>Главная</h1>
+    <h1 style="margin: 0px;"> Главная</h1>
     
+   
     
-    <button onclick="click_edit_button()" style="font-size: 20px;margin-bottom: 10px;margin-top: 10px;"  id="edit"  class="btn btn-primary" >Вкл режим редактирования</button>
+    <button onclick = "click_edit_button()" style="font-size: 20px;  margin-bottom: 5px;margin-top: 10px;"  id="edit"  class="btn btn-primary" >Вкл режим редактирования</button>
+    <button onclick = "change_color()" style="font-size: 20px;  margin-bottom: 5px;margin-top: 10px;"  id="change_c"  class="btn btn-primary" >Изменить цвет</button>
     <div>
-        <img src="{% static 'css/map1.png' %}" alt="My image">
-        <div id="dev" style="overflow: hidden;position:relative;float:left;display:block; width: 300px;height: 300px; border: 4px solid black;background-image: url({% static '\Image\map1.png' %});">
+        
+        <div id="dev" style="overflow: hidden;position:relative;float:left;display:block; width: 900px;height: 500px;margin-bottom: 40px; border: 3px solid black;background-image: url({% static '\Image\map1.png' %});">
             {% for node in devices %} 
-                <button  id="{node.pk}"  style="left:{node.node_x}; top:{node.node_y};"  type="button" class="device" draggable="true" >{{node.pk}}</button>
+                <button  id={{node.pk}} style="left:{{node.node_x}}px; top:{{node.node_y}}px;position: relative;font: 1em sans-serif;"  type="button" class="device" draggable="true" >{{node.pk}}</button>
             {% endfor %}
         </div>
     
@@ -22,7 +24,7 @@
                 <small>MAC:{{gateway.gateway_MAC}}</small>
             </div>
             <p class="mb-1">Описание: {{gateway.gateway_description}}</p>
-            <p class="mb-1">Описание: </p>
+           
             </a>
             {% endfor %}
             
@@ -32,121 +34,161 @@
 
     
     <script>
-        
-        let coorA;
-        let coorB;
-        let btn = null;
-        let lastMouseX;
-        let lastMouseY;
-        function createDevice( x, y)
+       alert(3);
+let coorA;
+let coorB;
+let btn = null;
+let lastMouseX;
+let lastMouseY;
+function createDevice( x, y)
+{
+    var b = document.createElement('button');
+    b.id = "node"+4;
+    b.className = "device";
+    b.style.left = y;
+    b.style.top = x;
+    b.draggable=true;
+    b.textContent="4";
+    return b;
+}
+
+dev.appendChild(createDevice({{devices.node_x}}, {{devices.node_y}}));
+function node_url()
+    {
+        if (event.target.className.indexOf("device") > -1) 
         {
-            var b = document.createElement('button');
-            b.id = "node"+4;
-            b.className = "device";
-            b.style.left = y;
-            b.style.top = x;
-            b.draggable=true;
-            b.textContent="4";
-            return b;
+            btn =event.target;
+            document.location='node/' + btn.innerHTML;
         }
-        
-        dev.appendChild(createDevice({{devices.node_x}}, {{devices.node_y}}));
-        function node_url()
-            {
-                if (event.target.className.indexOf("device") > -1) 
-                {
-                    btn =event.target;
-                    document.location='node/' + btn.innerHTML;
-                }
+    }
+function click() 
+{
+        if (event.target.className.indexOf("device") > -1) {
+            btn = event.target;
+            if(btn.style.top === "" || btn.style.left === "") {
+            btn.style.position = "relative";
+            btn.style.top = btn.offsetTop + "px";
+            btn.style.left = btn.offsetLeft + "px";
             }
-        function click() 
-        {
-                if (event.target.className.indexOf("device") > -1) {
-                    btn = event.target;
-                    if(btn.style.top === "" || btn.style.left === "") {
-                    btn.style.position = "relative";
-                    btn.style.top = btn.offsetTop + "px";
-                    btn.style.left = btn.offsetLeft + "px";
+            coorA = btn.offsetTop;
+            coorB = btn.offsetLeft;
+        }
+}
+
+    function dblclick() {
+        btn = null;
+    }
+
+    function mousemove() {
+        if (btn !== null) {
+            btn.style.top = parseInt(btn.style.top) + (event.clientY - lastMouseY) + "px";
+            btn.style.left = parseInt(btn.style.left) + (event.clientX - lastMouseX) + "px";
+        }
+        lastMouseX = event.clientX;
+        lastMouseY = event.clientY;
+    }
+    
+
+function click_edit_button()
+{
+    let s = document.getElementById("edit").innerHTML;
+    if(s==="Сохранить")
+    {
+        not_edit_butt();
+        document.getElementById("edit").innerHTML = "Вкл режим редактирования";
+        $.ajax({
+            url: "{{url}}/crm/my_work/newNB/",
+            type: 'POST',
+            dataType:"html",
+            data: {
+                "name": name,
+                "info": info,
+                "id": id,
+            },
+            error: function() {
+                alert('Ошибка получения запроса');
+            },
+// При успехе очищаем поля и меняем кнопочку
+            success: function(data) {
+             location.reload(); // для проверки, что скрипт работает
+            },
+// CSRF механизм защиты Django
+            beforeSend: function(xhr, settings) {
+                console.log('-------------before send--');
+                function getCookie(name) {
+                    var cookieValue = null;
+                    if (document.cookie && document.cookie != '') {
+                        var cookies = document.cookie.split(';');
+                        for (var i = 0; i < cookies.length; i++) {
+                            var cookie = jQuery.trim(cookies[i]);
+                            // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
                     }
-                    coorA = btn.offsetTop;
-                    coorB = btn.offsetLeft;
                 }
-        }
-
-            function dblclick() {
-                btn = null;
-            }
-
-            function mousemove() {
-                if (btn !== null) {
-                    btn.style.top = parseInt(btn.style.top) + (event.clientY - lastMouseY) + "px";
-                    btn.style.left = parseInt(btn.style.left) + (event.clientX - lastMouseX) + "px";
+                return cookieValue;
                 }
-                lastMouseX = event.clientX;
-                lastMouseY = event.clientY;
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                    // Only send the token to relative URLs i.e. locally.
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
             }
-            
+        });// ajax
 
-        function click_edit_button()
-        {
-            let s = document.getElementById("edit").innerHTML;
-            if(s==="Сохранить")
-            {
-                not_edit_butt();
-                document.getElementById("edit").innerHTML = "Вкл режим редактирования";
+    }
+    if(s==="Вкл режим редактирования")
+    {
+        edit_butt();
+        document.getElementById("edit").innerHTML = "Сохранить";
 
-            }
-            if(s==="Вкл режим редактирования")
-            {
-                edit_butt();
-                document.getElementById("edit").innerHTML = "Сохранить";
-
-            }
+    }
 
 
-        }
-
-
-      
-
-        function not_edit_butt()
-        {
-            dev.onclick = function(event)
-            {
-
-                btn = event.target;
-                btn.addEventListener("click", node_url);
-               
-                btn.removeEventListener("click", click);
-                btn.removeEventListener("mousemove", mousemove);
-                btn.removeEventListener("dblclick", dblclick);
-            //document.getElementById("node").removeEventListener("onclick", onclick);
-            }
-            
-        }
+}
 
 
 
-        function edit_butt()
-        {
-            let s = document.getElementById("edit").innerHTML;
-            console.log(s);
-      
-            
 
-            dev.onclick = function(event)
-            {
-                btn = event.target;
-                
-                btn.removeEventListener("click", node_url);
-                btn.addEventListener("click", click);
-                btn.addEventListener("mousemove", mousemove);
-                btn.addEventListener("dblclick", dblclick);
-            }
+function not_edit_butt()
+{
+    dev.onclick = function(event)
+    {
+
+        btn = event.target;
+        btn.addEventListener("click", node_url);
+       
+        btn.removeEventListener("click", click);
+        btn.removeEventListener("mousemove", mousemove);
+        btn.removeEventListener("dblclick", dblclick);
+    //document.getElementById("node").removeEventListener("onclick", onclick);
+    }
+    
+}
+
+
+
+function edit_butt()
+{
+    let s = document.getElementById("edit").innerHTML;
+    console.log(s);
+
+    
+
+    dev.onclick = function(event)
+    {
+        btn = event.target;
         
-            
-        }
-            //document.getElementById("edit").innerHTML ="Вкл режим редактирования";
+        btn.removeEventListener("click", node_url);
+        btn.addEventListener("click", click);
+        btn.addEventListener("mousemove", mousemove);
+        btn.addEventListener("dblclick", dblclick);
+    }
+
+    
+}
+    //document.getElementById("edit").innerHTML ="Вкл режим редактирования";
 
       
     </script>
