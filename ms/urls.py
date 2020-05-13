@@ -9,4 +9,5 @@ urlpatterns = [
     path('add_node/', views.add_node, name='add_node'),
     path('gateway_list/', views.gateways, name='gateway_list'),
     path('add_gateway/', views.add_gateway, name='add_gateway'),
+    path('edit/<int:id>/', views.edit, name='edit'),
 ]

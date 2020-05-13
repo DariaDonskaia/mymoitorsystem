@@ -14,13 +14,26 @@ def index(request):
         node.node_y = y
         node.save()
         return HttpResponse(json.dumps({'result' : result}),content_type="application/json")
-    device = Node.objects.all()[:5]
+    gate = request.GET.get('gateway')
+    print(gate)
+    
     gateways = Gateway.objects.all()[:5]
-    return render(request,'base.html',{'devices': device,'gateways':gateways })
+    
+    if gate:
+        selected = Gateway.objects.get(id = gate)
+        device = Gateway.objects.get(id = gate).gateway_node.all()
+    else:
+        selected = Gateway.objects.get(id = 1)
+        device = Gateway.objects.get(id = 1).gateway_node.all()
+    
+    return render(request,'base.html',{'devices': device,'gateways':gateways, 'selected': selected})
 
 def node(request,id_node):
     device = Node.objects.get(pk = id_node)
-    data = Node_Data.objects.get(node_data_node = id_node)
+    if Node_Data.objects.filter(node_data_node = id_node).exists():
+        data = Node_Data.objects.filter(node_data_node = id_node)[:5]
+    else:
+        data = []
     return render(request,'node.html',{'node': device, 'data':data})
 
 def nodes(request):
@@ -45,7 +58,7 @@ def add_gateway(request):
             'gateway_MAC':request.POST.get('gateway_MAC'),
             'gateway_image':request.POST.get('gateway_image'),
         }
-        form = GatewayForm(data)
+        form = GatewayForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
         return render(request, 'add_node.html', {'form': form})
@@ -53,6 +66,12 @@ def add_gateway(request):
         form = GatewayForm()
         return render(request, 'add_node.html', {'form': form})
 
+def edit(request, id):
+    
+    device = Node.objects.get(pk=id)
+ 
+    return render(request, "edit.html", {'node': device})
+  
 def gateways(request):
     device = Gateway.objects.all()
     return render(request,'gateways.html',{'gateways': device})

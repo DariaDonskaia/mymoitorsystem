@@ -1,88 +1,197 @@
     {% extends "header.html" %}
     {% block content %}
-    <h1 class="display-4">Узел ID: {{node.pk}}</h1>
-    <p class="lead">Описание:{{node.node_description}}</p>
-    <p class="lead">Тип:{{node.node_type.type_name}}</p>
-    <p class="lead">MAC:{{node.node_MAC}}</p>
-   <div class="chart-container" style="position: relative; height:400px; width:400px">
-     <canvas id="myChart" width="100" height="100"></canvas>
+    <div id="chart_div" style="width: 600px; height: 120px;display: block;float: right;"></div>
+    <div style="float: left;display: block;">
+        <h1 class="display-4">Узел ID: {{node.pk}}</h1>
+        <p class="lead">Описание:{{node.node_description}}</p>
+        <p class="lead">Тип:{{node.node_type.type_name}}</p>
+        <p class="lead">MAC:{{node.node_MAC}}</p>
     </div>
-
+    <div class="chart-container" style="position: relative; height:440px; width:880px">
+        <canvas id="temp" style="display: block;height: 330px;width: 330px;"  width="1630px" height="530px" ></canvas>
+    
+    
+        <canvas id="vlagn" style="display: block;height: 330px;width: 330px;" width="1630px" height="530px" ></canvas>
+    </div>
     <script>
-        let s1=0;
-        let s2=0;
+    
+        let data_bd = [];
+        let datatime_bd = [];
+        let s1 = [];
+        let s2 = [];
         let probel;
-        let s = '{{data.node_data_getdata}}';
-        console.log(s);
+        let s11;
+        let s12;
+       // let s = '{{data}}';
+        {% for d in data %} 
+            data_bd.push('{{d.node_data_getdata}}');
+            datatime_bd.push('{{d.node_data_time}}');
+        {% endfor %}
+        console.log(data_bd);
         //ЧТЕНИЕ ДАННЫХ С БД
         //ПЕРЕДЕЛАТЬ
         ////**********
-        for(let i=0;i<s.length;i++)
+        let t;
+        console.log(data_bd.length);
+        for(let j=0;j<data_bd.length;j++)
         {
-            if(s[i] == ' '){
-                probel=i;
+            let s = " ";
+            let ss = " ";
+            for(let i=0;i<data_bd[j].length;i++)
+            {
+                if(i<3)
+                {
+
+                    if(data_bd[j][i]!=' ')
+                    {
+                        s += data_bd[j][i];
+                        //console.log(s);
+                    }
+                    else
+                    {
+                        s1.push(parseInt(s));
+
+                    }
+
+                }
+                if(i>=3)
+                {
+                    ss += data_bd[j][i];
+                    if(i>=4){
+                        s2.push(parseInt(ss));
+                    }
+
+                }
+
+
+            }    
+        }
+                   
                 
-            }
+
+                
 
             
-        }
-        for(let i=0;i<s.length;i++)
-        {
-            if(i<probel){
-                console.log(s[i]);
-                    s1+=s[i];
-
-            }
-            if(i>probel){
-                s2+=s[i];
-
-            }
-        }
+        
+        
+        
         ///******************
         console.log(s1);
         console.log(s2);
-        let temp = parseInt(s1);
-        let vlagn = parseInt(s2);
+       // let temp = parseInt(s1);
+       // let vlagn = parseInt(s2);
         console.log(temp);
-        console.log(vlagn);
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Температура', 'Влажность'],
-                datasets: [{
-                    
-                    label: '# Показания',
-                    data: [temp,vlagn],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
+        //console.log(vlagn);
+
+        /******/
+         google.charts.load('current', {'packages':['gauge']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          //['Влажность', vlagn],
+          ['Температура', temp],
+        ]);
+
+        var options = {
+          width: 300, height: 320,
+          redFrom: 90, redTo: 100,
+          yellowFrom:75, yellowTo: 90,
+          minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+
+        chart.draw(data, options);
+
+        setInterval(function() {
+          data.setValue(0, 1, vlagn);
+          chart.draw(data, options);
+        }, 13000);
+        setInterval(function() {
+          data.setValue(1, 1, temp);
+          chart.draw(data, options);
+        }, 5000);
+       
+      }
+        ///////
+      let x = [];
+        for (let i = 0; i < s1.length; i++)
+            {
+                x.push(s1)
+            }  
+            console.log(x) ; 
+
+        var ctx = document.getElementById('temp');
+var temp = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: datatime_bd,
+        datasets: [{
+            label: 'Температура',
+            data: s1,datatime_bd
+            ,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
                 }
-            }
-        });
+            }]
+        }
+    }
+});
+var vtx = document.getElementById('vlagn');
+var vlagn = new Chart(vtx, {
+    type: 'line',
+    data: {
+        labels: datatime_bd,
+        datasets: [{
+            label: 'Влажность',
+            data: s2,datatime_bd
+            ,
+            backgroundColor: [
+                'rgb(72, 196, 224,0.4)'
+                
+            ],
+            borderColor: [
+                'rgb(20, 108, 128,0.4)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+	
+        
     </script>
    {% endblock %}  

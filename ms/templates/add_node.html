@@ -1,12 +1,12 @@
 {% extends "header.html" %}
 {% block content %}
 
-<form action="" method="POST">{% csrf_token %}
+<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
     <div class="form-group">
         
     {{ form.as_p}}
         
-    <button type="submit"  class="btn btn-info">Добавить узел</button>
+    <button type="submit" enctype="multipart/form-data"  class="btn btn-info">Добавить узел</button>
     </div>
 </form>
 

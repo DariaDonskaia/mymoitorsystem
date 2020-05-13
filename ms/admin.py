@@ -5,4 +5,5 @@ admin.site.register(Type)
 admin.site.register(Node_Data)
 admin.site.register(Node)
 admin.site.register(Gateway)
+
 # Register your models here.

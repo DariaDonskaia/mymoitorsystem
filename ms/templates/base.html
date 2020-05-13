@@ -10,7 +10,7 @@
     <button onclick = "change_color()" style="font-size: 20px;  margin-bottom: 5px;margin-top: 10px;"  id="change_c"  class="btn btn-primary" >Изменить цвет</button>
     <div>
         
-        <div id="dev" style="overflow: hidden;position:relative;float:left;display:block; width: 900px;height: 500px;margin-bottom: 40px; border: 3px solid black;background-image: url({% static '\Image\map1.png' %});">
+        <div id="dev" style="overflow: hidden;position:relative;float:left;display:block; width: 900px;height: 500px;margin-bottom: 40px; border: 3px solid black;background-image: url({{selected.gateway_image.url}});">
             {% for node in devices %} 
                 <button  id={{node.pk}} style="left:{{node.node_x}}px; top:{{node.node_y}}px;position: relative;font: 1em sans-serif;"  type="button" class="device" draggable="true" >{{node.pk}}</button>
             {% endfor %}
@@ -18,13 +18,17 @@
     
         <div class="list-group" style="float:right;display:block; width: 10em;">
             {% for gateway in gateways %} 
-            <a href="#" class="list-group-item list-group-item-action ">
+            {% if gateway == selected %}
+                    <a href="/?gateway={{ gateway.pk }}" class="list-group-item list-group-item-action active">
+                {% else %}
+                    <a href="/?gateway={{ gateway.pk }}" class="list-group-item list-group-item-action">
+                {% endif %}
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">Шлюз {{gateway.pk}}</h5>
                 <small>MAC:{{gateway.gateway_MAC}}</small>
             </div>
             <p class="mb-1">Описание: {{gateway.gateway_description}}</p>
-           
+            <script>links.push('{{ gateway.gateway_image.url }}')</script>
             </a>
             {% endfor %}
             

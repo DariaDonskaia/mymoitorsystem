@@ -13,12 +13,12 @@
         </thead>
         <tbody>
     {% for node in nodes %} 
-    <tr onclick="window.location.href='/node/{{ node.pk }}'; ">
-        <th style="text-align: center;" scope="row">{{ node.pk }}  </th>
+    <tr >
+        <th style="text-align: center;" scope="row" onclick="window.location.href='/node/{{ node.pk }}'; ">{{ node.pk }}   </th>
         <td>{{ node.node_MAC }}</td>
-        <td>{{ node.node_id_type }}</td>
+        <td>{{ node.node_type }}</td>
         <!--- <td>{{node.node_description }}</td>-->
-        <td scope="row"> <button type="button" class="btn btn-info">Изменить </button></td>
+        <td  scope="row"> <button onclick="window.location.href='/edit/{{ node.pk }}'" type="button" class="btn btn-info">Изменить </button></td>
       </tr>
        
     {% endfor %}

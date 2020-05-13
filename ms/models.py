@@ -12,6 +12,9 @@ class Node(models.Model):
     node_type = models.ForeignKey(Type, on_delete = models.CASCADE)
     node_x = models.IntegerField(null=True)
     node_y = models.IntegerField(null=True)
+    def __str__(self):
+        return  "MAC "+ str(self.node_MAC)
+    
 
 class Node_Data(models.Model):
     node_data_node = models.ForeignKey(Node, on_delete = models.CASCADE)
@@ -19,10 +22,14 @@ class Node_Data(models.Model):
     node_data_time = models.DateTimeField()
     node_data_battery = models.IntegerField()
 
+    
+
 class Gateway(models.Model):
     gateway_description = models.CharField(max_length=100)
     gateway_MAC = models.IntegerField(unique=True)
-    gateway_image = models.ImageField(upload_to='ms/static/image',null=True)
+    gateway_image = models.ImageField(upload_to='uploads/',null = True, blank = True)
+    gateway_node = models.ManyToManyField(Node)
+
 
 #class Users(models.Model):
  #   users_name = models.CharField(max_length=15)

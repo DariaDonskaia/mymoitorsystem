@@ -19,4 +19,10 @@ class NodeForm(forms.ModelForm):
 class GatewayForm(forms.ModelForm):
     class Meta:
         model = Gateway
-        fields = ('gateway_description', 'gateway_MAC', 'gateway_image')
+        fields = ('gateway_description', 'gateway_MAC', 'gateway_image', 'gateway_node')
+        labels = {
+            'gateway_description': _('Описание'),
+            'gateway_MAC': _('MAC'),
+            'gateway_image': _('Изображение'),
+            'gateway_node':_('Узлы'),
+        }
