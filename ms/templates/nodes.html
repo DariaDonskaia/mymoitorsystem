@@ -4,9 +4,9 @@
     <table class="table table-hover">
         <thead>
           <tr>
-            <th scope="col" style="font-size: 25px;width: 200px;text-align: center;">#</th>
-            <th scope="col" style="font-size: 25px;width: 400px;">MAC</th>
-            <th scope="col" style="font-size: 25px;">Тип<button class="btn btn-success" style="width: 23; height: 23;font-size: 20px; padding: 0px;margin-top: 0px; text-align: center;"><i  class="fas fa-plus"></i></button></th>
+            <th scope="col" style="font-size: 30px;width: 200px;text-align: center;">#</th>
+            <th scope="col" style="font-size: 30px;width: 400px;">MAC</th>
+            <th scope="col" style="font-size: 30px;">Тип<button class="btn btn-success" onclick='a()' style="width: 22px; height: 22px;font-size: 15px; padding: 0px;margin-top: 0px; text-align: center;"><i class="fas fa-plus"></i></button><input id='type_node' style="width: 150px;height: 30px;margin-left: 7px; font-size: 23px;" value=""></input></th>
            <!--- <th scope="col" style="font-size: 25px;">Описание</th>-->
             <th scope="col" style="width:180px;"> <button type="button" onclick="window.location.href='{% url 'add_node' %}'";  class="btn btn-primary">Добавить узел</button></th>
           </tr>
@@ -26,6 +26,44 @@
    
 </tbody>
 </table>
+<script>
+  let type_n = document.getElementById('type_node');
+  type_n.style.display = 'none';
+  function a()
+  {
+    
+    
+    let node_t = type_n.value;
+    type_n.value = "";
+    
+    if( type_n.style.display == 'inline-block')
+    {
+    
+       $.ajax({
+                    url: '',
+                    type: 'POST',
+                    data: {'type_name':node_t, csrfmiddlewaretoken: getCookie('csrftoken')},
+                    error:function(){
+                        console.log("Ошибка!");
+                    },
+                    success: function(data){
+                        console.log(data.result);
+                    return 0;
+                    }
+                 });
+                 type_n.style.display = 'none';
 
+    }
+    else
+    {
+
+      type_n.style.display = 'inline-block';
+
+    }
+      
+   
+     
+  }
+</script> 
   
   {% endblock %}  

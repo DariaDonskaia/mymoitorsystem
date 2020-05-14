@@ -22,7 +22,8 @@
         let probel;
         let s11;
         let s12;
-       // let s = '{{data}}';
+        
+       // let temp_graph = '{{data}}';
         {% for d in data %} 
             data_bd.push('{{d.node_data_getdata}}');
             datatime_bd.push('{{d.node_data_time}}');
@@ -35,30 +36,31 @@
         console.log(data_bd.length);
         for(let j=0;j<data_bd.length;j++)
         {
-            let s = " ";
-            let ss = " ";
+            let temp_graph = " ";
+            let hum_graph = " ";
             for(let i=0;i<data_bd[j].length;i++)
             {
-                if(i<3)
+                if(i<6)
                 {
 
                     if(data_bd[j][i]!=' ')
                     {
-                        s += data_bd[j][i];
-                        //console.log(s);
+                        temp_graph += data_bd[j][i];
+                        //console.log(temp_graph);
                     }
                     else
                     {
-                        s1.push(parseInt(s));
+                        s1.push(parseFloat(temp_graph));
 
                     }
 
                 }
-                if(i>=3)
+                if(i>=5)
                 {
-                    ss += data_bd[j][i];
-                    if(i>=4){
-                        s2.push(parseInt(ss));
+                    hum_graph += data_bd[j][i];
+                    if(i>=data_bd[j].length-1){
+                        s2.push(parseFloat(hum_graph));
+                        console.log("flaot" + hum_graph);
                     }
 
                 }
@@ -88,10 +90,11 @@
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-
+        let vlagn = s1[s1.length-1];
+        let temp = s2[s2.length-1];
         var data = google.visualization.arrayToDataTable([
           ['Label', 'Value'],
-          //['Влажность', vlagn],
+          ['Влажность', vlagn],
           ['Температура', temp],
         ]);
 

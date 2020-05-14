@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Node, Gateway, Node_Data
+from .models import Node, Gateway, Node_Data, Type
 from .forms import NodeForm, GatewayForm
 import json
 
@@ -37,6 +37,11 @@ def node(request,id_node):
     return render(request,'node.html',{'node': device, 'data':data})
 
 def nodes(request):
+    if request.is_ajax():
+        name = request.POST.get('type_name')
+        type_n = Type(type_name=name)
+        type_n.save()
+        return HttpResponse(json.dumps({'result' : result}),content_type="application/json")
     device = Node.objects.all()
     return render(request,'nodes.html',{'nodes': device})
 
@@ -65,6 +70,9 @@ def add_gateway(request):
     if request.method == 'GET':  
         form = GatewayForm()
         return render(request, 'add_node.html', {'form': form})
+
+
+   
 
 def edit(request, id):
     
